@@ -1,0 +1,40 @@
+package org.drools.demo;
+
+global java.util.List bestCriteria;
+
+rule "criteria 1"
+agenda-group "evaluate fitness"
+when
+	//Patterns that compute fitness here...
+then
+	insertLogical( new Criteria("C1", 0.3d) );
+end
+
+rule "criteria 2"
+agenda-group "evaluate fitness"
+when
+	//Patterns that compute fitness and return true here...
+then
+	insertLogical( new Criteria("C2", -0.1d) );
+end
+
+rule "criteria 3"
+agenda-group "evaluate fitness"
+when
+	//Patterns that compute fitness and return true here...
+then
+	insertLogical( new Criteria("C3", 0.4d) );
+end
+
+rule "Select best criteria and evaluate side-effects"
+when
+	accumulate(
+		Criteria($fit: fitness);
+		$bestFit: max( $fit )
+	)
+	$best: Criteria( fitness == $bestFit )
+then
+	bestCriteria.add( $best );
+	// evaluate side-effects, ensuring modify callbacks
+	// put again agenda-group in focus: drools.getKieRuntime().getAgenda().getAgendaGroup( "evaluate fitness" ).setFocus();
+end
